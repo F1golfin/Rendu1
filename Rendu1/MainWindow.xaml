@@ -6,10 +6,18 @@
         xmlns:local="clr-namespace:Rendu1"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+    <Grid RenderTransformOrigin="0.5,0.5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="0*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="2" Margin="39,0,0,0" Height="48" Width="0">
             <TextBlock Text="{Binding Name}" FontSize="20" HorizontalAlignment="Center"/>
             <TextBlock Text="{Binding Age}" FontSize="16" HorizontalAlignment="Center"/>
         </StackPanel>
+        <Button Content="Bouton" Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="266,223,0,0" VerticalAlignment="Top" Height="20" Width="43" Click="Button_Click"/>
+        <TextBlock Name="Txt1" Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="390,157,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Language="fr-fr" Text="Ceci est un texte"/></TextBlock>
     </Grid>
 </Window>

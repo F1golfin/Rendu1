@@ -24,4 +24,9 @@ public partial class MainWindow : Window
         DataContext = p1;
         
     }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        Txt1.Text = ("Oui tu es beau");
+    }
 }
