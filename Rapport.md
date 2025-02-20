@@ -88,6 +88,7 @@ CREATE TABLE evaluation
     note            INT CHECK (note BETWEEN 1 AND 5),
     commentaire     TEXT,
     date_evaluation DATETIME,
+    
     PRIMARY KEY (client_id, cuisinier_id),
     FOREIGN KEY (client_id) REFERENCES users (user_id),
     FOREIGN KEY (cuisinier_id) REFERENCES users (user_id)
@@ -98,55 +99,58 @@ CREATE TABLE evaluation
 Cette section présente plusieurs requêtes SQL permettant de manipuler la base de données **LivinParis**. 
 Ces requêtes couvrent l'insertion, la mise à jour, la suppression et la récupération d'informations utiles.
 
-- Insertion d'un **client** et d'un **cuisinier** avec des rôles distincts.
+- Insertion d'un **client**, d'un **cuisinier** et une personne qui a le double rôle.
 
 ```sql
-INSERT INTO users (password, role, type, email, nom, prenom, adresse, telephone)
-VALUES 
-    ('hash_mdp_client', 'Client', 'Particulier', 'client@example.com', 'Dupont', 'Jean', '10 Rue de Paris, 75000 Paris', '0601020304'),
-    ('hash_mdp_cuisinier', 'Cuisinier', 'Particulier', 'cuisinier@example.com', 'Martin', 'Paul', '20 Rue de Lyon, 69000 Lyon', '0611223344'),
-    ('hash_mdp_double', 'Client,Cuisinier', 'Particulier', 'chefclient@example.com', 'Durand', 'Alice', '5 Rue des Lilas, 75015 Paris', '0622334455');
+INSERT INTO users (password, role, type, email, nom, prenom, adresse, telephone, entreprise)
+VALUES
+    ('password123', 'Client', 'Particulier', 'client@mail.com', 'Dupont', 'Jean', '10 rue de Paris, 75001 Paris', '0601020304', NULL),
+    ('securepass', 'Cuisinier', 'Entreprise', 'chef@mail.com', 'Le Gourmet', 'Michel', '20 avenue de Lyon, 75002 Paris', '0605060708', 'Restaurant Le Gourmet'),
+    ('hash_mdp_double', 'Client,Cuisinier', 'Particulier', 'chefclient@example.com', 'Durand', 'Alice', '5 Rue des Lilas, 75015 Paris', '0622334455', NULL);
 ```
 
 - Création d'une commande entre un client et un cuisinier.
 
 ```sql
-INSERT INTO commandes (client_id, cuisinier_id, adresse_depart, adresse_arrivee, prix_total, statut)
-VALUES 
-    (1, 2, '20 Rue de Lyon, 69000 Lyon', '10 Rue de Paris, 75000 Paris', 25.50, 'Commandee');
+INSERT INTO commandes (heure_commande, heure_livraison, adresse_depart, adresse_arrivee, prix_total, statut, client_id, cuisinier_id)
+VALUES
+    (NOW(), DATE_ADD(NOW(), INTERVAL 2 HOUR), '10 rue de Paris, 75001 Paris', '30 boulevard Haussmann, 75009 Paris', 25.50, 'Commandee', 1, 2);
 ```
 
-- Insertion d'un plat proposé par un cuisinier et associer un plat à une commande existante (ex. commande avec id = 1)
+- Insertion d'un plat proposé par un cuisinier.
 
 ```sql
-INSERT INTO plats (nom_plat, type, nb_personne, nb_plats, date_fabrication, date_peremption, prix_par_personne, style_cuisine, ingredients, cuisinier)
-VALUES 
-    ('Lasagnes maison', 'Plat Principal', 2, 5, '2025-02-20', '2025-02-25', 12.00, 'Italien', 'Pâtes, viande, tomate, fromage', 2);
-
-UPDATE plats SET commande = 1 WHERE id = 1;
+INSERT INTO plats (nom_plat, type, nb_parts, date_fabrication, date_peremption, prix_par_personne, style_cuisine, regime_alimentaire, ingredients, cuisinier_id)
+VALUES
+    ('Lasagnes', 'Plat Principal', 4, '2025-02-20', '2025-02-25', 12.50, 'Italienne', 'Végétarien', 'Pâtes, tomate, fromage, béchamel', 2);
 ```
 
 - Un client évalue un cuisinier avec une note et un commentaire.
 
 ```sql
-INSERT INTO evaluations (client_id, cuisinier_id, note, commentaire)
-VALUES 
-    (1, 2, 5, 'Superbe plat, très savoureux et bien présenté !');
+INSERT INTO evaluation (client_id, cuisinier_id, note, commentaire, date_evaluation)
+VALUES
+    (1, 2, 5, 'Les plats sont excellents et la livraison rapide !', NOW());
 ```
 
-- Liste des plats non commandés et encore en stock.
+- Récupérer la liste des clients.
 
 ```sql
-SELECT * FROM plats WHERE commande IS NULL AND nb_plats > 0;
+SELECT user_id, nom, prenom, email, adresse, telephone FROM users WHERE role = 'Client';
 ```
 
-- Liste des commandes passées par un client (id = 1).
+- Afficher les plats d’un cuisinier.
 
 ```sql
-SELECT c.id, c.heure_commande, c.prix_total, c.statut, u.nom AS cuisinier
-FROM commandes c
-JOIN users u ON c.cuisinier_id = u.id
-WHERE c.client_id = 1;
+SELECT nom_plat, type, nb_parts, prix_par_personne, style_cuisine, regime_alimentaire FROM plats WHERE cuisinier_id = 2;
+```
+
+- Afficher les évaluations d’un cuisinier.
+
+```sql
+SELECT u.nom, u.prenom, e.note, e.commentaire, e.date_evaluation
+FROM evaluation e JOIN users u ON e.client_id = u.user_id
+WHERE e.cuisinier_id = 2;
 ```
 ---
 ## 2. Code c#
