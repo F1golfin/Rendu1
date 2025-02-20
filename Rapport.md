@@ -1,3 +1,32 @@
+﻿# Rapport de Projet – Rendu 1
+
+Ce rapport est structuré en deux grandes parties:
+1. **Schéma Entité/Association et script SQL**
+2. **Prompts issus des IA génératives concernant la visualisation du graphe**
+
+
+---
+
+## 1. Schéma Entité/Association et script SQL
+
+### 1.1 Schéma Entité/Association (E/A)
+
+#### Présentation
+Le schéma E/A ci-dessous illustre la structure conceptuelle de la base de données pour l’application **LivinParis**.
+- **users** : Gère les données de tous les utilisateurs (clients, cuisiniers, etc.).
+- **commandes** : Contient les informations nécessaires à une commande (client, cuisinier, adresses, etc.).
+- **plats** : Liste les plats proposés par les cuisiniers.
+- **evaluations** : Stocke les notes et commentaires des clients sur les cuisiniers.
+
+#### Schéma
+
+![](/Files/SchemaEA.png "Schéma entités associations")
+
+### 1.2 Script SQL
+
+Le script suivant crée et initialise la base **livin_paris** avec toutes les tables nécessaires.
+
+```sql
 DROP DATABASE IF EXISTS livin_paris;
 CREATE DATABASE livin_paris;
 USE livin_paris;
@@ -63,3 +92,65 @@ CREATE TABLE evaluation
     FOREIGN KEY (client_id) REFERENCES users (user_id),
     FOREIGN KEY (cuisinier_id) REFERENCES users (user_id)
 );
+```
+### 1.3 Exemples de Requêtes SQL
+
+Cette section présente plusieurs requêtes SQL permettant de manipuler la base de données **LivinParis**. 
+Ces requêtes couvrent l'insertion, la mise à jour, la suppression et la récupération d'informations utiles.
+
+- Insertion d'un **client** et d'un **cuisinier** avec des rôles distincts.
+
+```sql
+INSERT INTO users (password, role, type, email, nom, prenom, adresse, telephone)
+VALUES 
+    ('hash_mdp_client', 'Client', 'Particulier', 'client@example.com', 'Dupont', 'Jean', '10 Rue de Paris, 75000 Paris', '0601020304'),
+    ('hash_mdp_cuisinier', 'Cuisinier', 'Particulier', 'cuisinier@example.com', 'Martin', 'Paul', '20 Rue de Lyon, 69000 Lyon', '0611223344'),
+    ('hash_mdp_double', 'Client,Cuisinier', 'Particulier', 'chefclient@example.com', 'Durand', 'Alice', '5 Rue des Lilas, 75015 Paris', '0622334455');
+```
+
+- Création d'une commande entre un client et un cuisinier.
+
+```sql
+INSERT INTO commandes (client_id, cuisinier_id, adresse_depart, adresse_arrivee, prix_total, statut)
+VALUES 
+    (1, 2, '20 Rue de Lyon, 69000 Lyon', '10 Rue de Paris, 75000 Paris', 25.50, 'Commandee');
+```
+
+- Insertion d'un plat proposé par un cuisinier et associer un plat à une commande existante (ex. commande avec id = 1)
+
+```sql
+INSERT INTO plats (nom_plat, type, nb_personne, nb_plats, date_fabrication, date_peremption, prix_par_personne, style_cuisine, ingredients, cuisinier)
+VALUES 
+    ('Lasagnes maison', 'Plat Principal', 2, 5, '2025-02-20', '2025-02-25', 12.00, 'Italien', 'Pâtes, viande, tomate, fromage', 2);
+
+UPDATE plats SET commande = 1 WHERE id = 1;
+```
+
+- Un client évalue un cuisinier avec une note et un commentaire.
+
+```sql
+INSERT INTO evaluations (client_id, cuisinier_id, note, commentaire)
+VALUES 
+    (1, 2, 5, 'Superbe plat, très savoureux et bien présenté !');
+```
+
+- Liste des plats non commandés et encore en stock.
+
+```sql
+SELECT * FROM plats WHERE commande IS NULL AND nb_plats > 0;
+```
+
+- Liste des commandes passées par un client (id = 1).
+
+```sql
+SELECT c.id, c.heure_commande, c.prix_total, c.statut, u.nom AS cuisinier
+FROM commandes c
+JOIN users u ON c.cuisinier_id = u.id
+WHERE c.client_id = 1;
+```
+---
+## 2. Code c#
+
+
+
+
