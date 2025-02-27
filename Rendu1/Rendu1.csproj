@@ -8,4 +8,13 @@
         <UseWPF>true</UseWPF>
     </PropertyGroup>
 
+    <ItemGroup>
+      <None Include="bin\Debug\net8.0-windows\soc-karate.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp" Version="3.116.1" />
+      <PackageReference Include="SkiaSharp.Views.WPF" Version="3.116.1" />
+    </ItemGroup>
+
 </Project>
