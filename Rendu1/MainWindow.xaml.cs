@@ -1,20 +1,12 @@
-﻿using System.Text;
+﻿using System;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
 using System.Text.RegularExpressions;
-using System;
-using System.Windows;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
+using SkiaSharp.Views.WPF;
+
 namespace Rendu1;
-
-
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
@@ -81,13 +73,25 @@ public partial class MainWindow : Window
         // Afficher les résultats
         graphe.AfficherListeAdjacence();
         graphe.AfficherMatriceAdjacence();
-    
-        //InitializeComponent();
-
-        //Person p1 = new Person("guillaume", 20);
-        //DataContext = p1;
+        
         
         InitializeComponent();
         
+    }
+    
+    private void OnPaintSurface(object sender, SKPaintSurfaceEventArgs e)
+    {
+        SKCanvas canvas = e.Surface.Canvas;
+        canvas.Clear(SKColors.White);
+
+        using (var paint = new SKPaint())
+        {
+            paint.Color = SKColors.Blue;
+            paint.IsAntialias = true;
+            paint.Style = SKPaintStyle.Fill;
+            paint.StrokeWidth = 5;
+
+            canvas.DrawCircle(100, 100, 50, paint);
+        }
     }
 }

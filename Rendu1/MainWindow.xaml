@@ -4,12 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rendu1"
+        xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBlock Text="{Binding Name}" FontSize="20" HorizontalAlignment="Center"/>
-            <TextBlock Text="{Binding Age}" FontSize="16" HorizontalAlignment="Center"/>
-        </StackPanel>
+        <Grid>
+            <wpf:SKElement PaintSurface="OnPaintSurface" />
+        </Grid>
     </Grid>
 </Window>
