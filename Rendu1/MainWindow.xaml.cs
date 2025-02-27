@@ -19,6 +19,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+        
+        Console.WriteLine("Test");
 
         Person p1 = new Person("guillaume", 20);
         DataContext = p1;
