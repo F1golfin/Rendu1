@@ -14,7 +14,7 @@ public partial class MainWindow : Window
 {
     public MainWindow()
     {
-        string cheminFichier = "soc-karate.txt";
+        string cheminFichier = "../../../../Files/soc-karate.txt";
         
         if (!File.Exists(cheminFichier))
         {
