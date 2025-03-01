@@ -184,3 +184,8 @@ J'ai donc fais un prompt afin de savoir comment faire pour empecher ce problème
 
 ## 3. Annalyse du graphe 
 
+### 3.1. Est-ce-que le graphe est connexe ?
+En observant le résultat ci-dessus, on constate que le graphe n'est pas connexe car certains sommets ne sont reliés à aucun autre sommet. Cela est dû à la façon de lire le fichier "soc-karate.txt".
+En effet, pour créer un graphe à partir du fichier, nous avons besoin du nombre de sommets. Pour obtenir ce nombre, on regarde le nombre de lignes dans le fichier. Dans le fichier fourni, on en compte 33, nous avons donc 33 sommets. En revanche, si nous regardons le fichier en détail, on voit que certains sommets ne sont pas précisés. Par exemple, on passe de 13 à 17. D'où le fait que 14, 15 et 16 soient dans le "vide".
+
+### 3.2. Le graphe contient-il des circuits ?
