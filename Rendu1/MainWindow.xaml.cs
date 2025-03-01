@@ -22,9 +22,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ChargerGrapheDepuisFichier("../../../../Files/soc-karate.txt");
+        ChargerGrapheDepuisFichier("../../../../Files/soc-karate.mtx");
         GenererPositionsNoeuds();
-        string cheminFichier = "../../../../Files/soc-karate.txt";
+        string cheminFichier = "../../../../Files/soc-karate.mtx";
 
         if (!File.Exists(cheminFichier))
         {
@@ -45,7 +45,8 @@ public partial class MainWindow : Window
                 continue;
 
 
-            Match match = Regex.Match(ligneNettoyee, @"\((\d+),\s*(\d+)\)");
+            Match match = Regex.Match(ligneNettoyee, @"^(\d+)\s+(\d+)$");
+
 
             if (match.Success)
             {
@@ -87,7 +88,7 @@ public partial class MainWindow : Window
         int sommet = -1;
         do
         {
-            Console.WriteLine("Entrer un sommet de départ du parcours (compris entre 0 et "+graphe.NbSommets+") : ");
+            Console.WriteLine("Entrer un sommet de départ du parcours (compris entre 0 et "+(graphe.NbSommets-2)+") : ");
             sommet = int.Parse(Console.ReadLine());
         }while( sommet < 0 );   
         graphe.ParcoursEnProfondeur(sommet);
@@ -177,38 +178,56 @@ public partial class MainWindow : Window
     {
         if (!File.Exists(cheminFichier))
         {
-            MessageBox.Show($"Fichier '{cheminFichier}' introuvable", "Erreur", MessageBoxButton.OK,
-                MessageBoxImage.Error);
+            MessageBox.Show($"Fichier '{cheminFichier}' introuvable", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
             return;
         }
 
         string[] lignes = File.ReadAllLines(cheminFichier);
-        int maxSommet = 0;
         List<(int, int)> liens = new List<(int, int)>();
+        int maxSommet = 0;
 
         foreach (string ligne in lignes)
         {
             string ligneNettoyee = ligne.Trim();
-            if (string.IsNullOrWhiteSpace(ligneNettoyee))
+
+            /// Ignorer les lignes de commentaires
+            if (string.IsNullOrWhiteSpace(ligneNettoyee) || ligneNettoyee.StartsWith("%"))
                 continue;
 
-            Match match = Regex.Match(ligneNettoyee, @"\((\d+),\s*(\d+)\)");
-            if (match.Success)
+            /// Lire les paires de sommets
+            string[] tokens = ligneNettoyee.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            if (tokens.Length == 2 && 
+                int.TryParse(tokens[0], out int sommet1) &&
+                int.TryParse(tokens[1], out int sommet2))
             {
-                if (int.TryParse(match.Groups[1].Value, out int sommet1) &&
-                    int.TryParse(match.Groups[2].Value, out int sommet2))
-                {
-                    liens.Add((sommet1, sommet2));
-                    maxSommet = Math.Max(maxSommet, Math.Max(sommet1, sommet2));
-                }
+                /// Mettre à jour le nombre max de sommets détecté
+                maxSommet = Math.Max(maxSommet, Math.Max(sommet1, sommet2));
+
+                /// Ajouter l'arête au graphe
+                liens.Add((sommet1 - 1, sommet2 - 1)); // Convertir en index basé sur 0
+            }
+            else
+            {
+                Console.WriteLine($"Ligne ignorée : '{ligneNettoyee}' (format invalide)");
             }
         }
 
-        graphe = new Graphe(maxSommet + 1);
+        /// Vérifier si le graphe contient des sommets
+        if (maxSommet == 0)
+        {
+            MessageBox.Show("Erreur : Aucun sommet détecté dans le fichier.", "Erreur", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
 
+        /// Création du graphe avec le nombre de sommets détecté
+        graphe = new Graphe(maxSommet);
+
+        /// Ajouter les liens au graphe
         foreach (var (sommet1, sommet2) in liens)
         {
             graphe.AjouterLien(sommet1, sommet2);
         }
+
+        Console.WriteLine($"✅ Graphe chargé avec {maxSommet} sommets et {liens.Count} arêtes.");
     }
 }
