@@ -4,7 +4,6 @@ Ce rapport est structuré en deux grandes parties:
 1. **Schéma Entité/Association et script SQL**
 2. **Prompts issus des IA génératives concernant la visualisation du graphe**
 
-
 ---
 
 ## 1. Schéma Entité/Association et script SQL
@@ -214,9 +213,11 @@ J'ai d'abord envoyé la structure de mon code afin de généré un exemple de co
 
 > *"Peux-tu me donner un code d'exemple pour afficher mon graphe en utilisant SkiaSharp, sachant que je ne sais pas bien utiliser cette librairie"*
 
-Il ma donc fourni un code assez simple mais l'affichage ne correspondait pas à mes attentes. Le graphe était en cercle et les sommets se supperposaient. J'ai donc ajouter une partie de hasard au code qu'il m'a fourni afin que les sommets soient répartis sur la fenêtre d'affichage. En revanche, le problème des sommets qui se supperposent n'était pas traité.
+Il m'a donc fourni un code assez simple mais l'affichage ne correspondait pas à mes attentes. Le graphe était en cercle et les sommets se supperposaient. J'ai donc ajouter une partie de hasard au code qu'il m'a fourni afin que les sommets soient répartis sur la fenêtre d'affichage. En revanche, le problème des sommets qui se supperposent n'était pas traité.
 J'ai donc fais un prompt afin de savoir comment faire pour empecher ce problème. Il à amélioré mon code afin qu'au moment où les points sont généré au hasard, si les points sont trop proche.
+
 ---
+
 Nous avons testé le code sur les **deux jeux de données** fournis, et nous avons constaté que les **points sont régénérés** correctement.
 
 **Graphe 1 :** (soc-karate.txt)
