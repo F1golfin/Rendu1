@@ -156,5 +156,31 @@ WHERE e.cuisinier_id = 2;
 ## 2. Code c#
 
 
+Dans le cadre de ce projet, j'ai utilisé une IA générative afin d'améliorer la qualité et l'organisation de mon code en C#. Plusieurs aspects ont été abordés via des prompts spécifiques :
 
+### 2.1. Gestion des erreurs
+Afin de garantir la robustesse du programme, j'ai également sollicité l'IA pour identifier les erreurs potentielles à anticiper, je lui ai posé la question suivante en lui donnant mon code :
+
+> *"Quels types d'erreurs basiques dois-je gérer dans mon programme"*
+
+L'IA a suggéré d'inclure l'utilisation de regex pour la gestion des erreurs de lecture de fichier. Par exemple le cas ou le fichier n'est pas trouvé ou bien s'il y a des lignes sautées, des espaces en trop etc... 
+
+### 2.2. Amélioration de la lisibilité des commentaires
+Pour rendre mon code plus propre, j'ai utilisé l'IA pour reformuler et structurer mes commentaires en respectant les `///`.
+
+> *"Peux-tu reformuler (et corriger les fautes) et structurer mes commentaires pour qu'ils soient en `///` ?"*
+
+L'IA a alors proposé des reformulations claires et concises en ajoutant des balises XML (`<summary>`, `<param>`, `<returns>`, etc.), améliorant ainsi la maintenabilité du code.
+
+### 2.3. Utilisation de SkiaSharp
+J'ai d'abord envoyé la structure de mon code afin de généré un exemple de comment pourrait être utilisé SkiaSharp. Voici un exemple du prompt envoyé :
+
+> *"Peux-tu me donner un code d'exemple pour afficher mon graphe en utilisant SkiaSharp, sachant que je ne sais pas bien utiliser cette librairie"*
+
+Il ma donc fourni un code assez simple mais l'affichage ne correspondait pas à mes attentes. Le graphe était en cercle et les sommets se supperposaient. J'ai donc ajouter une partie de hasard au code qu'il m'a fourni afin que les sommets soient répartis sur la fenêtre d'affichage. En revanche, le problème des sommets qui se supperposent n'était pas traité.
+J'ai donc fais un prompt afin de savoir comment faire pour empecher ce problème. Il à amélioré mon code afin qu'au moment où les points sont généré au hasard, si les points sont trop proche, le points est regénéré. Voici le résultat final :  
+
+![](/Files/GrapheResultatFinal.png "Résultat")
+
+## 3. Annalyse du graphe 
 
