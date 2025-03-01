@@ -214,7 +214,7 @@ J'ai d'abord envoyé la structure de mon code afin de généré un exemple de co
 
 > *"Peux-tu me donner un code d'exemple pour afficher mon graphe en utilisant SkiaSharp, sachant que je ne sais pas bien utiliser cette librairie"*
 
-Il ma donc fourni un code assez simple mais l'affichage ne correspondait pas à mes attentes. Le graphe était en cercle et les sommets se supperposaient. J'ai donc ajouter une partie de hasard au code qu'il m'a fourni afin que les sommets soient répartis sur la fenêtre d'affichage. En revanche, le problème des sommets qui se supperposent n'était pas traité.
+Il m'a donc fourni un code assez simple mais l'affichage ne correspondait pas à mes attentes. Le graphe était en cercle et les sommets se supperposaient. J'ai donc ajouter une partie de hasard au code qu'il m'a fourni afin que les sommets soient répartis sur la fenêtre d'affichage. En revanche, le problème des sommets qui se supperposent n'était pas traité.
 J'ai donc fais un prompt afin de savoir comment faire pour empecher ce problème. Il à amélioré mon code afin qu'au moment où les points sont généré au hasard, si les points sont trop proche.
 ---
 Nous avons testé le code sur les **deux jeux de données** fournis, et nous avons constaté que les **points sont régénérés** correctement.
@@ -223,13 +223,13 @@ Nous avons testé le code sur les **deux jeux de données** fournis, et nous avo
 ![](/Files/GrapheResultatFinal.png "Résultat")
 
 **Graphe 2 :** (soc-karate.mtx)
-![](/Files/GrapheResultatFinal.png "Résultat")
+![](/Files/GrapheResultatFinal2.png "Résultat")
 
 ## 3. Annalyse du graphe 1
 
 ### 3.1. Est-ce-que le graphe est connexe ?
 En observant le résultat ci-dessus, on constate que le graphe 1 n'est pas connexe car certains sommets ne sont reliés à aucun autre sommet. Cela est dû à la façon de lire le fichier "soc-karate.txt".
-En effet, pour créer un graphe à partir du fichier, nous avons besoin du nombre de sommets. Pour obtenir ce nombre, on regarde le nombre de lignes dans le fichier. Dans le fichier fourni, on en compte 33, nous avons donc 33 sommets. En revanche, si nous regardons le fichier en détail, on voit que certains sommets ne sont pas précisés. Par exemple, on passe de 13 à 17. D'où le fait que 14, 15 et 16 soient dans le "vide".
+En effet, pour créer un graphe à partir du fichier, nous avons besoin du nombre de sommets. Pour obtenir ce nombre, on regarde le nombre de lignes dans le fichier. Dans le fichier fourni, on en compte 34, nous avons donc 34 sommets. En revanche, si nous regardons le fichier en détail, on voit que certains sommets ne sont pas précisés. Par exemple, on passe de 13 à 17. D'où le fait que 14, 15 et 16 soient dans le "vide".
 
 ### 3.2. Le graphe contient-il des circuits ?
 En observant le document fournis, on remarque la présence des arêtes suivantes : (1,2) ; (2,3) ; (3,1). Il s'agit ici d'un cycle d'après la définition du cours car on part du sommet 1 et on revient au sommet 1. Ainsi, on peut en conclure qu'il y a au moins un cycle dans le graphe. 
@@ -239,9 +239,7 @@ Par cette méthode, on trouve aussi le cycle (31,32) ; (32,33) ; (31,33).
 ## 4. Annalyse du graphe 2
 
 ### 3.1. Est-ce-que le graphe est connexe ?
-En observant le résultat ci-dessus, on constate que le graphe 2 est connexe car tout les sommets sont reliés entre eux.
+En observant le résultat ci-dessus, on constate que le graphe 2 est connexe car tout les sommets sont reliés entre eux. Nous obtenons ce résultat différent car le fichier `.mtx` nous fourni la liste des arrêtes, il n'y à donc pas de sommet dans le "vide".
 
 ### 3.2. Le graphe contient-il des circuits ?
-En observant le document fournis, on remarque la présence des arêtes suivantes : (1,2) ; (2,3) ; (3,1). Il s'agit ici d'un cycle d'après la définition du cours car on part du sommet 1 et on revient au sommet 1. Ainsi, on peut en conclure qu'il y a au moins un cycle dans le graphe.
-La méthode utilisée est donc une sorte de relation de Chasles, chercher des arêtes qui reliées ensembles forment un chemin qui part d'un sommet et revient vers ce même sommet.
-Par cette méthode, on trouve aussi le cycle (31,32) ; (32,33) ; (31,33).
+On sait que si un graphe est connexe et qu'il a au moins autant d'arrêtes que de sommet, alors, il admet un circuit. En regardant le fichier fourni pour créer le graphe, on observe qu'il y a plus d'arrêtes que de sommets (une ligne vaut une arrête et il y a plus que 34 lignes). On peut donc conclure que notre graphe admet des circuits.
