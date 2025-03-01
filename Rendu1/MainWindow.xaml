@@ -5,11 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rendu1"
         xmlns:wpf="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+        xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid>
-            <wpf:SKElement PaintSurface="OnPaintSurface" />
+            <Grid>
+                <skia:SKElement PaintSurface="OnPaintSurface"/>
+            </Grid>
+
         </Grid>
     </Grid>
 </Window>

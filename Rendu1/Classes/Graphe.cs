@@ -13,18 +13,21 @@ public class Graphe
 
         for (int i = 0; i < nbSommets; i++)
         {
-            listeAdjacence[i] = new List<int>(); //création d'une liste vide pour chaque sommet
+            listeAdjacence[i] = new List<int>(); ///création d'une liste vide pour chaque sommet
         }
         
     }
+    
+    public Dictionary<int, List<int>> ListeAdjacence { get => listeAdjacence; }
+    public int NbSommets { get => nbSommets; }
 
     public void AjouterLien(int a, int b)
     {
-        //Pour la liste d'adjancence 
+        ///Pour la liste d'adjancence 
         listeAdjacence[a].Add(b);
         listeAdjacence[b].Add(a);
         
-        //Pour ne matrice d'adjacences 
+        ///Pour ne matrice d'adjacences 
         matriceAdjacence[a, b] = true;
         matriceAdjacence[b, a] = true;
     }
@@ -34,21 +37,19 @@ public class Graphe
         foreach (var VARIABLE in listeAdjacence)
         {
             Console.WriteLine($"{VARIABLE.Key} -> {string.Join(", ", VARIABLE.Value)}");
-            //Console.Write(VARIABLE.Key + "->");//key correspond au sommet
-            //Console.WriteLine(VARIABLE.Value);//value correspond aux sommets auquel il est lié
         }
     }
 
     public void AfficherMatriceAdjacence()
     {
-        Console.Write("   "); // Espacement pour l'en-tête
+        Console.Write("   "); /// Espacement pour l'en-tête
         for (int i = 0; i < nbSommets; i++)
-            Console.Write($"{i,2} "); // Afficher les indices des colonnes
+            Console.Write($"{i,2} "); /// Afficher les indices des colonnes
         Console.WriteLine("\n  " + new string('-', nbSommets * 3));
 
         for (int i = 0; i < nbSommets; i++)
         {
-            Console.Write($"{i,2} | "); // Afficher l'indice du sommet
+            Console.Write($"{i,2} | "); /// Afficher l'indice du sommet
             for (int j = 0; j < nbSommets; j++)
             {
                 Console.Write(matriceAdjacence[i, j] ? "1 " : "0 "); 
