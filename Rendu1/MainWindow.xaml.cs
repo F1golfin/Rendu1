@@ -22,9 +22,9 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        ChargerGrapheDepuisFichier("soc-karate.txt");
+        ChargerGrapheDepuisFichier("../../../../Files/soc-karate.txt");
         GenererPositionsNoeuds();
-        string cheminFichier = "soc-karate.txt";
+        string cheminFichier = "../../../../Files/soc-karate.txt";
 
         if (!File.Exists(cheminFichier))
         {
@@ -79,8 +79,19 @@ public partial class MainWindow : Window
         }
 
         /// Afficher les résultats
+        Console.WriteLine("\n----------------------------LISTE D'ADJACENCE----------------------------\n");
         graphe.AfficherListeAdjacence();
+        Console.WriteLine("\n----------------------------MATRICE D'ADJACENCE----------------------------\n");
         graphe.AfficherMatriceAdjacence();
+        Console.WriteLine("\n----------------------------PARCOURS DE GRAPHE----------------------------\n");
+        int sommet = -1;
+        do
+        {
+            Console.WriteLine("Entrer un sommet de départ du parcours (compris entre 0 et "+graphe.NbSommets+") : ");
+            sommet = int.Parse(Console.ReadLine());
+        }while( sommet < 0 );   
+        graphe.ParcoursEnProfondeur(sommet);
+        graphe.ParcoursEnLargeur(sommet);
     }
     
     /// <summary>

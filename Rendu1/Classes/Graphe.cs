@@ -57,4 +57,54 @@ public class Graphe
             Console.WriteLine();
         }
     }
+    public void ParcoursEnProfondeurRec(int sommet, bool[] visite)
+    {
+        Console.Write(sommet + " ");
+        visite[sommet] = true;
+        Stack<int> pile = new Stack<int>();
+        foreach(int voisin in listeAdjacence[sommet])
+        {
+            if (visite[voisin] == false)
+            {
+                ParcoursEnProfondeurRec(voisin, visite);
+            }
+        }
+    }
+    public void ParcoursEnProfondeur(int sommet)
+    {
+        int max = nbSommets;
+        bool[] visite = new bool[max];
+        Console.WriteLine("Parcours en Profondeur : ");
+        Console.Write("[");
+        ParcoursEnProfondeurRec(sommet, visite);
+        Console.WriteLine("]");
+    }
+    
+    public void ParcoursEnLargeur(int depart)
+    {
+        bool[] visited = new bool[nbSommets];
+        Queue<int> file = new Queue<int>(); 
+
+        file.Enqueue(depart);
+        visited[depart] = true;
+
+        Console.WriteLine("Parcours en Largeur : ");
+        Console.Write("[");
+
+        while (file.Count > 0)
+        {
+            int sommet = file.Dequeue();
+            Console.Write(sommet + " ");
+
+            foreach (int voisin in listeAdjacence[sommet])
+            {
+                if (visited[voisin]==false)
+                {
+                    file.Enqueue(voisin);
+                    visited[voisin] = true;
+                }
+            }
+        }
+        Console.WriteLine("]");
+    }
 }
