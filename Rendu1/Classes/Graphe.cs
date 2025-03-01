@@ -20,6 +20,7 @@ public class Graphe
     
     public Dictionary<int, List<int>> ListeAdjacence { get => listeAdjacence; }
     public int NbSommets { get => nbSommets; }
+    public bool[,] MatriceAdjacence { get => matriceAdjacence; }
 
     public void AjouterLien(int a, int b)
     {

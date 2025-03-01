@@ -9,4 +9,6 @@ public class Noeud
         this.id = id;
     }
     
+    public int Id { get => id; }
+    
 }
