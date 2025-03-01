@@ -93,6 +93,24 @@ public partial class MainWindow : Window
         }while( sommet < 0 );   
         graphe.ParcoursEnProfondeur(sommet);
         graphe.ParcoursEnLargeur(sommet);
+        
+        if (graphe.EstConnexe())
+        {
+            Console.WriteLine("Le graphe est connexe.");
+        }
+        else
+        {
+            Console.WriteLine("Le graphe n'est pas connexe.");
+        }
+        
+        if (graphe.ContientCycle())
+        {
+            Console.WriteLine("Le graphe contient un ou plusieurs cycles.");
+        }
+        else
+        {
+            Console.WriteLine("Le graphe ne contient pas de cycle.");
+        }
     }
     
     /// <summary>
