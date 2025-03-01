@@ -189,3 +189,6 @@ En observant le résultat ci-dessus, on constate que le graphe n'est pas connexe
 En effet, pour créer un graphe à partir du fichier, nous avons besoin du nombre de sommets. Pour obtenir ce nombre, on regarde le nombre de lignes dans le fichier. Dans le fichier fourni, on en compte 33, nous avons donc 33 sommets. En revanche, si nous regardons le fichier en détail, on voit que certains sommets ne sont pas précisés. Par exemple, on passe de 13 à 17. D'où le fait que 14, 15 et 16 soient dans le "vide".
 
 ### 3.2. Le graphe contient-il des circuits ?
+En observant le document fournis, on remarque la présence des arêtes suivantes : (1,2) ; (2,3) ; (3,1). Il s'agit ici d'un cycle d'après la définition du cours car on part du sommet 1 et on revient au sommet 1. Ainsi, on peut en conclure qu'il y a au moins un cycle dans le graphe. 
+La méthode utilisée est donc une sorte de relation de Chasles, chercher des arêtes qui reliées ensembles forment un chemin qui part d'un sommet et revient vers ce même sommet. 
+Par cette méthode, on trouve aussi le cycle (31,32) ; (32,33) ; (31,33).
