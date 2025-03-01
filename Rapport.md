@@ -11,22 +11,28 @@ Ce rapport est structuré en deux grandes parties:
 
 ### 1.1 Schéma Entité/Association (E/A)
 
-#### Présentation
-Le schéma E/A ci-dessous illustre la structure conceptuelle de la base de données pour l’application **LivinParis**.
-- **users** : Gère les données de tous les utilisateurs (clients, cuisiniers, etc.).
-- **commandes** : Contient les informations nécessaires à une commande (client, cuisinier, adresses, etc.).
-- **plats** : Liste les plats proposés par les cuisiniers.
-- **evaluations** : Stocke les notes et commentaires des clients sur les cuisiniers.
+Le schéma Entité/Association ci-dessous illustre la structure conceptuelle de la base de données de l’application **LivinParis** :
 
-#### Schéma
+- **users** : Contient les informations sur les utilisateurs (clients, cuisiniers, livreurs, etc.).
+- **commandes** : Regroupe les données relatives aux commandes (heure, adresse de départ, prix total).
+- **plats** : Liste les plats disponibles, avec leurs caractéristiques (nom, nombre de parts, date de fabrication, etc.).
+- **recettes** : Référence les recettes utilisées pour les plats.
+- **lignes_commandes** : Détaille les différentes lignes associées à une commande (adresse d’arrivée, statut de la livraison).
+- **evaluations** : Permet aux utilisateurs de noter et commenter les services.
 
 ![](/Files/SchemaEA.png "Schéma entités associations")
 
-### 1.2 Script SQL
+## 1.2 Modèle Logique des Données (MLD)
+
+![](/Files/SchemaMLD.png "Modèle Logique des Données")
+
+---
+
+### 1.3 Script SQL
 
 Le script suivant crée et initialise la base **livin_paris** avec toutes les tables nécessaires.
 
-```sql
+```mysql
 DROP DATABASE IF EXISTS livin_paris;
 CREATE DATABASE livin_paris;
 USE livin_paris;
@@ -40,44 +46,64 @@ CREATE TABLE users
     email      VARCHAR(100) UNIQUE                NOT NULL,
     nom        VARCHAR(50)                        NOT NULL, -- Pour les entreprises contient le nom du contact
     prenom     VARCHAR(50)                        NOT NULL, -- Pour les entreprises contient le prenom du contact
-    adresse    TEXT                               NOT NULL,
+    adresse    VARCHAR(255)                       NOT NULL,
     telephone  VARCHAR(15) UNIQUE                 NOT NULL,
     entreprise VARCHAR(50)                                  -- Pour les entreprises contient le nom de l'entreprise, NULL pour les particuliers
+
 );
 
 CREATE TABLE commandes
 (
-    commande_id     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    heure_commande  DATETIME,
-    heure_livraison DATETIME,
-    adresse_depart  TEXT                                                            NOT NULL, -- Permet de figer une fois la commande réalisée
-    adresse_arrivee TEXT                                                            NOT NULL,
-    prix_total      DECIMAL(8, 2)                                                   NOT NULL, -- Pourrait etre recalculer
-    statut          ENUM ('Commandee', 'Preparee', 'En cours', 'Livree', 'Annulee') NOT NULL,
-    client_id       BIGINT UNSIGNED,
-    cuisinier_id    BIGINT UNSIGNED,
+    commande_id    BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    heure_commande DATETIME,
+    adresse_depart TEXT          NOT NULL,
+    prix_total     DECIMAL(8, 2) NOT NULL, -- Pourrait etre recalculer
+    client_id      BIGINT UNSIGNED,
+    cuisinier_id   BIGINT UNSIGNED,
 
     FOREIGN KEY (client_id) REFERENCES users (user_id) ON DELETE SET NULL,
     FOREIGN KEY (cuisinier_id) REFERENCES users (user_id) ON DELETE SET NULL
 );
 
+CREATE TABLE recettes
+(
+    recette_id         BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nom_recette        VARCHAR(100)                                 NOT NULL,
+    type               ENUM ('Entrée', 'Plat Principal', 'Dessert') NOT NULL,
+    ingredients        TEXT                                         NOT NULL,
+    style_cuisine      INT                                          NOT NULL, -- ENUM ?
+    regime_alimentaire VARCHAR(50),                                           -- SET ? null si pas de regime
+    parent_recette_id  BIGINT UNSIGNED UNIQUE,
+
+    FOREIGN KEY (parent_recette_id) REFERENCES recettes (recette_id) ON DELETE SET NULL
+);
+
+CREATE TABLE lignes_commandes
+(
+    ligne_commande_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    heure_livraison   DATETIME,
+    adresse_arrivee   TEXT                                                            NOT NULL,
+    statut            ENUM ('Commandee', 'Preparee', 'En cours', 'Livree', 'Annulee') NOT NULL,
+    commande_id       BIGINT UNSIGNED                                                 NOT NULL,
+
+    FOREIGN KEY (commande_id) REFERENCES commandes (commande_id)
+);
+
 CREATE TABLE plats
 (
-    plat_id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    nom_plat           VARCHAR(100)                                 NOT NULL,
-    type               ENUM ('Entrée', 'Plat Principal', 'Dessert') NOT NULL,
-    nb_parts           INT                                          NOT NULL,
-    date_fabrication   DATE                                         NOT NULL,
-    date_peremption    DATE                                         NOT NULL,
-    prix_par_personne  DECIMAL(6, 2)                                NOT NULL,
-    style_cuisine      VARCHAR(50)                                  NOT NULL, -- ENUM ?
-    regime_alimentaire VARCHAR(50),                                           -- SET ? null si pas de regime
-    ingredients        TEXT                                         NOT NULL,
-    photo              LONGBLOB,
-    cuisinier_id       BIGINT UNSIGNED                              NOT NULL,
-    commande_id        BIGINT UNSIGNED,                                       -- Null si le plat n'a pas été commandé
+    plat_id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    nom_plat          VARCHAR(100)    NOT NULL,
+    nb_parts          INT             NOT NULL,
+    date_fabrication  DATE            NOT NULL,
+    date_peremption   DATE            NOT NULL,
+    prix_par_personne DECIMAL(6, 2)   NOT NULL,
+    photo             LONGBLOB,
+    cuisinier_id      BIGINT UNSIGNED NOT NULL,
+    recette_id        BIGINT UNSIGNED NOT NULL,
+    commande_id       BIGINT UNSIGNED, -- Null si le plat n'a pas été commandé
 
     FOREIGN KEY (cuisinier_id) REFERENCES users (user_id),
+    FOREIGN KEY (recette_id) REFERENCES recettes (recette_id),
     FOREIGN KEY (commande_id) REFERENCES commandes (commande_id)
 );
 
@@ -88,69 +114,80 @@ CREATE TABLE evaluation
     note            INT CHECK (note BETWEEN 1 AND 5),
     commentaire     TEXT,
     date_evaluation DATETIME,
-    
+
     PRIMARY KEY (client_id, cuisinier_id),
     FOREIGN KEY (client_id) REFERENCES users (user_id),
     FOREIGN KEY (cuisinier_id) REFERENCES users (user_id)
 );
 ```
-### 1.3 Exemples de Requêtes SQL
+### 1.4 Exemples de Requêtes SQL
 
-Cette section présente plusieurs requêtes SQL permettant de manipuler la base de données **LivinParis**. 
-Ces requêtes couvrent l'insertion, la mise à jour, la suppression et la récupération d'informations utiles.
+Cette section présente plusieurs requêtes SQL permettant de manipuler la base de données **LivinParis**.
 
-- Insertion d'un **client**, d'un **cuisinier** et une personne qui a le double rôle.
+Voici des requêtes pour insérer des données dans la base :
 
 ```sql
+-- 1. Insérer un utilisateur (Client)
 INSERT INTO users (password, role, type, email, nom, prenom, adresse, telephone, entreprise)
-VALUES
-    ('password123', 'Client', 'Particulier', 'client@mail.com', 'Dupont', 'Jean', '10 rue de Paris, 75001 Paris', '0601020304', NULL),
-    ('securepass', 'Cuisinier', 'Entreprise', 'chef@mail.com', 'Le Gourmet', 'Michel', '20 avenue de Lyon, 75002 Paris', '0605060708', 'Restaurant Le Gourmet'),
-    ('hash_mdp_double', 'Client,Cuisinier', 'Particulier', 'chefclient@example.com', 'Durand', 'Alice', '5 Rue des Lilas, 75015 Paris', '0622334455', NULL);
-```
+VALUES ('mdp123', 'Client', 'Particulier', 'client@example.com', 'Dupont', 'Jean', '12 Rue de Paris, 75001', '0601020304', NULL);
 
-- Création d'une commande entre un client et un cuisinier.
+-- 2. Insérer un utilisateur (Cuisinier)
+INSERT INTO users (password, role, type, email, nom, prenom, adresse, telephone, entreprise)
+VALUES ('mdp456', 'Cuisinier', 'Particulier', 'cuisinier@example.com', 'Martin', 'Sophie', '15 Rue de Lyon, 69002', '0611223344', NULL);
 
-```sql
-INSERT INTO commandes (heure_commande, heure_livraison, adresse_depart, adresse_arrivee, prix_total, statut, client_id, cuisinier_id)
-VALUES
-    (NOW(), DATE_ADD(NOW(), INTERVAL 2 HOUR), '10 rue de Paris, 75001 Paris', '30 boulevard Haussmann, 75009 Paris', 25.50, 'Commandee', 1, 2);
-```
+-- 3. Insérer une recette
+INSERT INTO recettes (nom_recette, type, ingredients, style_cuisine, regime_alimentaire)
+VALUES ('Salade César', 'Entrée', 'Salade, Poulet, Parmesan, Croutons, Sauce César', 1, 'Végétarien');
 
-- Insertion d'un plat proposé par un cuisinier.
+-- 4. Insérer un plat basé sur une recette existante
+INSERT INTO plats (nom_plat, nb_parts, date_fabrication, date_peremption, prix_par_personne, cuisinier_id, recette_id)
+VALUES ('Salade César Gourmande', 4, '2025-03-01', '2025-03-05', 9.99, 2, 1);
 
-```sql
-INSERT INTO plats (nom_plat, type, nb_parts, date_fabrication, date_peremption, prix_par_personne, style_cuisine, regime_alimentaire, ingredients, cuisinier_id)
-VALUES
-    ('Lasagnes', 'Plat Principal', 4, '2025-02-20', '2025-02-25', 12.50, 'Italienne', 'Végétarien', 'Pâtes, tomate, fromage, béchamel', 2);
-```
+-- 5. Insérer une commande passée par un client
+INSERT INTO commandes (heure_commande, adresse_depart, prix_total, client_id, cuisinier_id)
+VALUES ('2025-03-01 12:00:00', '12 Rue de Paris, 75001', 39.96, 1, 2);
 
-- Un client évalue un cuisinier avec une note et un commentaire.
+-- 6. Ajouter une ligne de commande pour un plat commandé
+INSERT INTO lignes_commandes (heure_livraison, adresse_arrivee, statut, commande_id)
+VALUES ('2025-03-01 13:00:00', '12 Rue de Paris, 75001', 'Commandee', 1);
 
-```sql
+-- 7. Insérer une évaluation d'un client sur un cuisinier
 INSERT INTO evaluation (client_id, cuisinier_id, note, commentaire, date_evaluation)
-VALUES
-    (1, 2, 5, 'Les plats sont excellents et la livraison rapide !', NOW());
+VALUES (1, 2, 5, 'Excellent plat et livraison rapide !', '2025-03-01 14:00:00');
 ```
+Voici des requêtes pour consulter des données dans la base :
 
-- Récupérer la liste des clients.
+```mysql
+-- 1. Sélectionner tous les utilisateurs
+SELECT * FROM users;
 
-```sql
-SELECT user_id, nom, prenom, email, adresse, telephone FROM users WHERE role = 'Client';
-```
+-- 1.bis Sélectionner tous les cuisiniers
+SELECT * FROM users WHERE role = 'Cuisinier';
 
-- Afficher les plats d’un cuisinier.
+-- 2. Lister toutes les commandes avec les informations du client et du cuisinier
+SELECT c.commande_id, c.heure_commande, c.adresse_depart, c.prix_total,
+       u_client.nom AS client_nom, u_client.prenom AS client_prenom,
+       u_cuisinier.nom AS cuisinier_nom, u_cuisinier.prenom AS cuisinier_prenom
+FROM commandes c
+LEFT JOIN users u_client ON c.client_id = u_client.user_id
+LEFT JOIN users u_cuisinier ON c.cuisinier_id = u_cuisinier.user_id;
 
-```sql
-SELECT nom_plat, type, nb_parts, prix_par_personne, style_cuisine, regime_alimentaire FROM plats WHERE cuisinier_id = 2;
-```
+-- 3. Récupérer la liste des plats disponibles avec leurs recettes
+SELECT p.plat_id, p.nom_plat, p.nb_parts, p.date_fabrication, p.date_peremption, p.prix_par_personne,
+       r.nom_recette, r.type AS type_recette, r.ingredients
+FROM plats p
+INNER JOIN recettes r ON p.recette_id = r.recette_id;
 
-- Afficher les évaluations d’un cuisinier.
+-- 4. Afficher la moyenne des notes données aux cuisiniers
+SELECT cuisinier_id, AVG(note) AS moyenne_note
+FROM evaluation
+GROUP BY cuisinier_id;
 
-```sql
-SELECT u.nom, u.prenom, e.note, e.commentaire, e.date_evaluation
-FROM evaluation e JOIN users u ON e.client_id = u.user_id
-WHERE e.cuisinier_id = 2;
+-- 5. Lister les commandes en cours de livraison
+SELECT lc.ligne_commande_id, c.commande_id, lc.heure_livraison, lc.adresse_arrivee, lc.statut
+FROM lignes_commandes lc
+INNER JOIN commandes c ON lc.commande_id = c.commande_id
+WHERE lc.statut = 'En cours';
 ```
 ---
 ## 2. Code c#
