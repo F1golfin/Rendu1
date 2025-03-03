@@ -11,5 +11,7 @@ public class Lien
         this.noeud2 = noeud2;
     }
     
+    public Noeud Noeud1 { get => noeud1;}
+    public Noeud Noeud2 { get => noeud2;}
     
 }
